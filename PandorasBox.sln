@@ -5,7 +5,7 @@ VisualStudioVersion = 18.3.11312.210 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PandorasBox", "PandorasBox\PandorasBox.csproj", "{910E17C8-A0DF-4131-B610-CD387C19035D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PunishLib", "..\PunishLib\PunishLib\PunishLib.csproj", "{CF1B84A9-C285-A7A1-7ECE-0C3DFACC7EFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PunishLib", "PunishLib\PunishLib\PunishLib.csproj", "{CF1B84A9-C285-A7A1-7ECE-0C3DFACC7EFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
