@@ -7,9 +7,9 @@ namespace PandorasBox.Features.Actions
 {
     public unsafe class AutoCollect : Feature
     {
-        public override string Name => "Auto-Collect";
+        public override string Name => "自动开启收藏品采集";
 
-        public override string Description => "When switching to FSH, ensures Collector's Glove will always be on.";
+        public override string Description => "当切换到捕鱼人时, 保证收藏品采集处于开启。";
 
         public override FeatureType FeatureType => FeatureType.Actions;
 
@@ -17,20 +17,23 @@ namespace PandorasBox.Features.Actions
 
         public class Configs : FeatureConfig
         {
-            [FeatureConfigOption("Set delay (seconds)", FloatMin = 0.1f, FloatMax = 10f, EditorSize = 300)]
+            [FeatureConfigOption("设置延迟 (秒)", FloatMin = 0.1f, FloatMax = 10f, EditorSize = 300)]
             public float ThrottleF = 0.1f;
         }
 
         public Configs Config { get; private set; } = null!;
 
-        
+
         private void ActivateBuff(uint? jobValue)
         {
-            if (jobValue is null) return;
-            if (jobValue is not (18)) return;
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.BetweenAreas]) return;
+            if (jobValue is null)
+                return;
+            if (jobValue is not (18))
+                return;
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.BetweenAreas])
+                return;
             TaskManager.EnqueueDelay((int)(Config.ThrottleF * 1000));
-            var am = ActionManager.Instance();   
+            var am = ActionManager.Instance();
             if (Svc.Objects.LocalPlayer?.StatusList.Where(x => x.StatusId == 805).Count() == 1)
                 return;
             if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Gathering])

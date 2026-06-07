@@ -1,9 +1,9 @@
+using Dalamud.Bindings.ImGui;
 using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Hooking;
 using ECommons.DalamudServices;
 using ECommons.Gamepad;
 using FFXIVClientStructs.FFXIV.Client.System.Input;
-using Dalamud.Bindings.ImGui;
 using PandorasBox.FeaturesSetup;
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,8 @@ namespace PandorasBox.Features.Other
 {
     internal class TurboController : Feature
     {
-        public override string Name { get; } = "Turbo Controller";
-        public override string Description { get; } = "Enable rapid fire button presses on controller by holding down a button.";
+        public override string Name { get; } = "Turbo手柄";
+        public override string Description { get; } = "通过按住一个按钮，在手柄上启用快速开火按键。";
 
         public override FeatureType FeatureType => FeatureType.Other;
 
@@ -69,18 +69,19 @@ namespace PandorasBox.Features.Other
 
         protected override DrawConfigDelegate DrawConfigTree => (ref bool hasChanged) =>
         {
-            if (ImGui.InputInt("Interval (ms)", ref Config.Throttle, 10, 50))
+            if (ImGui.InputInt("触发间隔 (毫秒)", ref Config.Throttle, 10, 50))
                 hasChanged = true;
 
-            if (ImGui.Checkbox("In Combat Only", ref Config.CombatOnly))
+            if (ImGui.Checkbox("仅在战斗中", ref Config.CombatOnly))
                 hasChanged = true;
 
             ImGui.Spacing();
-            ImGui.Text("Excluded Buttons");
+            ImGui.Text("排除的按键");
             ImGui.Columns(4);
             foreach (var btn in GamePad.ControllerButtons)
             {
-                if (btn.Key == GamepadButtons.None) continue;
+                if (btn.Key == GamepadButtons.None)
+                    continue;
 
                 bool excluded = Config.ExcludedButtons.Contains(btn.Key);
                 if (ImGui.Checkbox($"{btn.Value}", ref excluded))

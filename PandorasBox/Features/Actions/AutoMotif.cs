@@ -9,16 +9,18 @@ namespace PandorasBox.Features.Actions
 {
     internal class AutoMotif : Feature
     {
-        public override string Name => "Auto-Motif (Out of Combat)";
-        public override string Description => "Automatically draws motifs when outside of combat and not in a sanctuary.";
+        public override string Name => "自动绘画（脱战时）";
+        public override string Description => "不在战斗状态且不在休息区时自动绘画。";
         public override FeatureType FeatureType => FeatureType.Actions;
 
         public override void Enable()
         {
             Svc.Framework.Update += CheckMotifs;
             Events.OnJobChanged += DelayStart;
-            if (SendActionHook is null) EzSignatureHelper.Initialize(this);
-            else SendActionHook?.Enable();
+            if (SendActionHook is null)
+                EzSignatureHelper.Initialize(this);
+            else
+                SendActionHook?.Enable();
             base.Enable();
         }
 
@@ -35,10 +37,14 @@ namespace PandorasBox.Features.Actions
 
         private unsafe void CheckMotifs(IFramework framework)
         {
-            if (Svc.Objects.LocalPlayer is null) return;
-            if (Svc.Objects.LocalPlayer.ClassJob.RowId != 42) return;
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.InCombat]) return;
-            if (TerritoryInfo.Instance()->InSanctuary) return;
+            if (Svc.Objects.LocalPlayer is null)
+                return;
+            if (Svc.Objects.LocalPlayer.ClassJob.RowId != 42)
+                return;
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.InCombat])
+                return;
+            if (TerritoryInfo.Instance()->InSanctuary)
+                return;
 
             if (EzThrottler.Throttle("PCTMotifs", 1500))
             {

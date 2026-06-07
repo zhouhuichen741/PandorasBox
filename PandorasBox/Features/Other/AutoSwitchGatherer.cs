@@ -10,15 +10,15 @@ namespace PandorasBox.Features.Other
 {
     public unsafe class AutoSwitchGatherer : Feature
     {
-        public override string Name => "Switch Gatherers Automatically";
+        public override string Name => "自动切换采集职业";
 
-        public override string Description => "Switches to the appropriate gathering job when approaching a gathering spot and you have both Triangulate & Prospect active. Must have a gearset for the job to switch to.";
+        public override string Description => "当接近采集点时，并且“三角测量”和“矿脉勘探”都处于激活状态时，自动切换到适合的采集职业。职业必须有一个套装预设才能切换到。";
 
         public override FeatureType FeatureType => FeatureType.Other;
 
         public class Configs : FeatureConfig
         {
-            [FeatureConfigOption("Set delay (seconds)", FloatMin = 0.1f, FloatMax = 10f, EditorSize = 300, EnforcedLimit = true)]
+            [FeatureConfigOption("设置延迟 (秒)", FloatMin = 0.1f, FloatMax = 10f, EditorSize = 300, EnforcedLimit = true)]
             public float Throttle = 0.1f;
         }
 
@@ -35,7 +35,8 @@ namespace PandorasBox.Features.Other
 
         private void RunFeature(IFramework framework)
         {
-            if (Svc.Objects.LocalPlayer == null) return;
+            if (Svc.Objects.LocalPlayer == null)
+                return;
 
             var nearbyNodes = Svc.Objects.Where(x => x.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.GatheringPoint && GameObjectHelper.GetTargetDistance(x) <= 10).ToList();
             if (nearbyNodes.Count == 0)
@@ -72,9 +73,11 @@ namespace PandorasBox.Features.Other
 
         private static unsafe bool SwitchJobGearset(uint cjID)
         {
-            if (Svc.Objects.LocalPlayer?.ClassJob.RowId == cjID) return true;
+            if (Svc.Objects.LocalPlayer?.ClassJob.RowId == cjID)
+                return true;
             var gs = GetGearsetForClassJob(cjID);
-            if (gs is null) return true;
+            if (gs is null)
+                return true;
 
             Chat.SendMessage($"/gearset change {gs.Value + 1}");
 
@@ -87,10 +90,14 @@ namespace PandorasBox.Features.Other
             for (var i = 0; i < 100; i++)
             {
                 var gearset = gearsetModule->GetGearset(i);
-                if (gearset == null) continue;
-                if (!gearset->Flags.HasFlag(RaptureGearsetModule.GearsetFlag.Exists)) continue;
-                if (gearset->Id != i) continue;
-                if (gearset->ClassJob == cjId) return gearset->Id;
+                if (gearset == null)
+                    continue;
+                if (!gearset->Flags.HasFlag(RaptureGearsetModule.GearsetFlag.Exists))
+                    continue;
+                if (gearset->Id != i)
+                    continue;
+                if (gearset->ClassJob == cjId)
+                    return gearset->Id;
             }
             return null;
         }

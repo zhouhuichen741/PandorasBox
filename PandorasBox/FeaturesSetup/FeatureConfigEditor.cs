@@ -54,7 +54,7 @@ namespace PandorasBox.FeaturesSetup
                     return true;
                 }
                 ImGui.SameLine();
-                ImGui.TextUnformatted($"Zone Whitelist ({territories.Count} territories selected)");
+                ImGui.TextUnformatted($"地图白名单 ({territories.Count} 个地区已选择)");
             }
             return false;
         }

@@ -17,9 +17,9 @@ namespace PandorasBox.Features.ChatFeature;
 
 internal class AutoOpenCoords : Feature
 {
-    public override string Name => "Auto-Open Map Coords";
+    public override string Name => "自动打开地图坐标";
 
-    public override string Description => "Automatically opens the map to coordinates posted in chat.";
+    public override string Description => "自动打开聊天中发布的坐标地图。";
 
     public override FeatureType FeatureType => FeatureType.ChatFeature;
 
@@ -29,13 +29,13 @@ internal class AutoOpenCoords : Feature
 
     public class Configs : FeatureConfig
     {
-        [FeatureConfigOption("Include Sonar links")]
+        [FeatureConfigOption("包括 Sonar 链接")]
         public bool IncludeSonar = false;
 
-        [FeatureConfigOption("Set <flag> without opening the map")]
+        [FeatureConfigOption("设置 <flag> 时不打开地图")]
         public bool DontOpenMap = false;
 
-        [FeatureConfigOption("Ignore <pos> flags")]
+        [FeatureConfigOption("忽略 <pos> 标签")]
         public bool IgnorePOS = false;
 
         public List<XivChatType> FilteredChannels = new();
@@ -166,11 +166,11 @@ internal class AutoOpenCoords : Feature
 
     protected override DrawConfigDelegate DrawConfigTree => (ref bool hasChanged) =>
     {
-        hasChanged |= ImGui.Checkbox("Include Sonar links", ref Config.IncludeSonar);
-        hasChanged |= ImGui.Checkbox("Ignore <pos> flags", ref Config.IgnorePOS);
-        hasChanged |= ImGui.Checkbox("Set <flag> without opening the map", ref Config.DontOpenMap);
+        hasChanged |= ImGui.Checkbox("包括 Sonar 链接", ref Config.IncludeSonar);
+        hasChanged |= ImGui.Checkbox("忽略 <pos> 标志", ref Config.IgnorePOS);
+        hasChanged |= ImGui.Checkbox("设置 <flag> 时不打开地图", ref Config.DontOpenMap);
 
-        if (ImGui.CollapsingHeader("Channel Filters (Whitelist)"))
+        if (ImGui.CollapsingHeader("频道过滤器（白名单）"))
         {
             ImGui.Indent();
             foreach (XivChatType chatType in Enum.GetValues(typeof(XivChatType)))

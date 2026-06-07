@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
@@ -15,13 +12,16 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using PandorasBox.FeaturesSetup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PandorasBox.Features.UI;
 
 public class AutoVoteMvp : Feature
 {
-    public override string Name => "Auto-Commendation after Duty";
-    public override string Description => "Automatically give a commendation to a random player in your party at the end of a duty.";
+    public override string Name => "自动点赞";
+    public override string Description => "副本结束时自动点赞小队中对位的队友。";
     public override FeatureType FeatureType => FeatureType.UI;
 
     public override bool UseAutoConfig => false;
@@ -45,7 +45,7 @@ public class AutoVoteMvp : Feature
         if (GameMain.Instance()->CurrentContentFinderConditionId != 0)
         {
             var payload = PandoraPayload.Payloads.ToList();
-            payload.Add(new TextPayload(" [Auto-Commendation] Please note as this feature was enabled mid-duty, it may not operate correctly if you have queued into the duty with other players in your party before joining."));
+            payload.Add(new TextPayload(" [自动点赞] 请注意，由于此功能是在副本期间启用的，如果您在加入之前与队伍中的其他玩家一起匹配，则可能无法正常运行。"));
             Svc.Chat.Print(new SeString(payload));
         }
         Config = LoadConfig<Configs>() ?? new Configs();
@@ -86,14 +86,17 @@ public class AutoVoteMvp : Feature
 
     private unsafe void FrameworkUpdate(IFramework framework)
     {
-        if (Player.Object == null) return;
-        if (Svc.ClientState.IsPvP) return;
+        if (Player.Object == null)
+            return;
+        if (Svc.ClientState.IsPvP)
+            return;
         CheckForDeadPartyMembers();
     }
 
     private unsafe void OnBannerSetup(AddonEvent type, AddonArgs args)
     {
-        if (Svc.ClientState.IsPvP) return;
+        if (Svc.ClientState.IsPvP)
+            return;
         var atk = (AtkUnitBase*)args.Addon.Address;
         try
         {
@@ -122,7 +125,8 @@ public class AutoVoteMvp : Feature
         {
             if (pm.GameObject?.IsDead ?? false)
             {
-                if (DeadPlayers.Contains(pm.EntityId)) continue;
+                if (DeadPlayers.Contains(pm.EntityId))
+                    continue;
                 DeadPlayers.Add(pm.EntityId);
                 if (DeathTracker.ContainsKey(pm.EntityId))
                     DeathTracker[pm.EntityId] += 1;
@@ -137,13 +141,15 @@ public class AutoVoteMvp : Feature
     private unsafe int ChoosePlayer(AtkUnitBase* bannerWindow)
     {
         var hud = UIModule.Instance()->GetAgentModule()->GetAgentHUD();
-        if (hud == null) throw new Exception("HUD is empty!");
+        if (hud == null)
+            throw new Exception("HUD is empty!");
 
         var list = Svc.Party.Where(i => i.EntityId != Svc.Objects.LocalPlayer?.GameObjectId && i.GameObject != null && !PremadePartyID.Any(y => y == i.Name.TextValue))
                 .Select(PartyMember => (Math.Max(0, GetPartySlotIndex(PartyMember.EntityId, hud) - 1), PartyMember))
                 .ToList();
 
-        if (!list.Any()) return -1;
+        if (!list.Any())
+            return -1;
 
         if (Config.ExcludeDeaths)
         {
@@ -159,39 +165,34 @@ public class AutoVoteMvp : Feature
         var tanks = list.Where(i => i.PartyMember.ClassJob.Value.Role == 1);
         var healer = list.Where(i => i.PartyMember.ClassJob.Value.Role == 4);
         var dps = list.Where(i => i.PartyMember.ClassJob.Value.Role is 2 or 3);
-
+        var melee = list.Where(i => i.PartyMember.ClassJob.Value.Role is 2);
+        var range = list.Where(i => i.PartyMember.ClassJob.Value.Role is 3);
+        var myjob = Svc.Objects.LocalPlayer?.ClassJob.Value.Role;
         (int index, IPartyMember member) voteTarget = new();
-        switch (Config.Priority)
+        if (myjob == 1)
         {
-            //tank
-            case 0:
-                if (tanks.Any()) voteTarget = RandomPick(tanks);
-                else if (healer.Any()) voteTarget = RandomPick(healer);
-                else voteTarget = RandomPick(dps);
-                break;
-            //Healer
-            case 1:
-                if (healer.Any()) voteTarget = RandomPick(healer);
-                else if (tanks.Any()) voteTarget = RandomPick(tanks);
-                else voteTarget = RandomPick(dps);
-                break;
-            //DPS
-            case 2:
-                if (dps.Any()) voteTarget = RandomPick(dps);
-                else if (tanks.Any()) voteTarget = RandomPick(tanks);
-                else voteTarget = RandomPick(healer);
-                break;
-            //No Priority
-            case 3:
-                voteTarget = RandomPick(list);
-                break;
+            voteTarget = tanks.Any() ? tanks.FirstOrDefault() : healer.FirstOrDefault();
+        }
+        else if (myjob == 4)
+        {
+            voteTarget = healer.Any() ? healer.FirstOrDefault() : tanks.FirstOrDefault();
+        }
+        else if (myjob == 2)
+        {
+            voteTarget = melee.Any() ? melee.FirstOrDefault() : range.FirstOrDefault();
+        }
+        else
+        {
+            voteTarget = range.Any() ? range.FirstOrDefault() : melee.FirstOrDefault();
         }
 
-        if (voteTarget.member == null) return -1;
+        if (voteTarget.member == null)
+            return -1;
 
         for (int i = 22; i <= 22 + 7; i++)
         {
-            if (bannerWindow->AtkValues[i].Type != AtkValueType.String) continue;
+            if (bannerWindow->AtkValues[i].Type != AtkValueType.String)
+                continue;
             var name = bannerWindow->AtkValues[i].String.ToString();
             if (name == voteTarget.member.Name.TextValue)
             {
@@ -200,7 +201,7 @@ public class AutoVoteMvp : Feature
                     var payload = PandoraPayload.Payloads.ToList();
                     payload.AddRange(
                     [
-                        new TextPayload("Commend given to "),
+                        new TextPayload("点赞给 "),
                         voteTarget.member.ClassJob.Value!.Role switch
                         {
                             1 => new IconPayload(BitmapFontIcon.Tank),
@@ -239,7 +240,8 @@ public class AutoVoteMvp : Feature
 
     private static unsafe void VoteBanner(AtkUnitBase* bannerWindow, int index)
     {
-        if (index == -1) return;
+        if (index == -1)
+            return;
         var atkValues = stackalloc AtkValue[2];
         atkValues[0].SetInt(12);
         atkValues[1].SetInt(index);
@@ -249,40 +251,19 @@ public class AutoVoteMvp : Feature
     protected override DrawConfigDelegate DrawConfigTree => (ref bool _) =>
     {
         bool hasChanged = false;
-        if (ImGui.RadioButton("Prioritize Tank Vote", Config.Priority == 0))
-        {
-            Config.Priority = 0;
-            hasChanged = true;
-        }
 
-        if (ImGui.RadioButton("Prioritize Healer Vote", Config.Priority == 1))
-        {
-            Config.Priority = 1;
-            hasChanged = true;
-        }
-
-        if (ImGui.RadioButton("Prioritize DPS Vote", Config.Priority == 2))
-        {
-            Config.Priority = 2;
-            hasChanged = true;
-        }
-
-        if (ImGui.RadioButton("No Priority", Config.Priority == 3))
-        {
-            Config.Priority = 3;
-            hasChanged = true;
-        }
-
-        if (ImGui.Checkbox("Hide Chat Message", ref Config.HideChat))
+        if (ImGui.Checkbox("不在聊天中显示点赞结果", ref Config.HideChat))
             hasChanged = true;
 
-        if (ImGui.Checkbox("Exclude Party Members That Die", ref Config.ExcludeDeaths))
+        if (ImGui.Checkbox("排除死亡过的队友", ref Config.ExcludeDeaths))
             hasChanged = true;
 
         if (Config.ExcludeDeaths)
         {
-            if (ImGui.DragInt("How Many Times?", ref Config.HowManyDeaths, 0.01f, 1, 100)) hasChanged = true;
-            if (ImGui.Checkbox("Reset Death Tracker on Wipe", ref Config.ResetOnWipe)) hasChanged = true;
+            if (ImGui.DragInt("大于等于多少次", ref Config.HowManyDeaths, 0.01f, 1, 100))
+                hasChanged = true;
+            if (ImGui.Checkbox("团灭时重置死亡次数统计", ref Config.ResetOnWipe))
+                hasChanged = true;
         }
 
         if (hasChanged)

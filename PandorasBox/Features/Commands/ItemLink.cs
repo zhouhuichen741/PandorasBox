@@ -1,21 +1,21 @@
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using ECommons;
 using ECommons.DalamudServices;
+using Lumina.Excel.Sheets;
 using PandorasBox.FeaturesSetup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lumina.Excel.Sheets;
-using Dalamud.Game.Text.SeStringHandling.Payloads;
-using ECommons;
 
 namespace PandorasBox.Features.Commands
 {
     public unsafe class ItemLinkCommand : CommandFeature
     {
-        public override string Name => "Item Link";
+        public override string Name => "道具链接";
         public override string Command { get; set; } = "/plink";
-        public override List<string> Parameters => new() { "[<item name>], [<id>]" };
-        public override string Description => "It's like the other item link commands, but allows searching.";
+        public override List<string> Parameters => new() { "[<道具名>], [<id>]" };
+        public override string Description => "它与其他道具链接命令类似，但允许搜索。";
 
         public override FeatureType FeatureType => FeatureType.Commands;
 

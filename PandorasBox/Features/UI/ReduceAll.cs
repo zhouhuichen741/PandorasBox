@@ -1,8 +1,8 @@
+using Dalamud.Bindings.ImGui;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Dalamud.Bindings.ImGui;
 using PandorasBox.FeaturesSetup;
 using PandorasBox.Helpers;
 using PandorasBox.UI;
@@ -13,9 +13,9 @@ namespace PandorasBox.Features.UI
 {
     public unsafe class ReduceAll : Feature
     {
-        public override string Name => "Reduce All Items";
+        public override string Name => "精选所有道具";
 
-        public override string Description => "Adds a button to Aetherial Reduction to process all items.";
+        public override string Description => "在精选中添加一个按钮来处理所有道具。";
 
         public override FeatureType FeatureType => FeatureType.UI;
 
@@ -78,13 +78,13 @@ namespace PandorasBox.Features.UI
 
                 if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Mounted])
                 {
-                    ImGui.Text("You are mounted, please dismount");
+                    ImGui.Text("你在骑乘中，请下坐骑");
                 }
                 else
                 {
                     if (!Reducing)
                     {
-                        if (ImGui.Button($"Reduce All###StartReduce", size))
+                        if (ImGui.Button($"精选全部###StartReduce", size))
                         {
                             Reducing = true;
                             TaskManager.Enqueue(() => YesAlready.Lock());
@@ -94,7 +94,7 @@ namespace PandorasBox.Features.UI
                     }
                     else
                     {
-                        if (ImGui.Button($"Reducing. Click to abort.###AbortReduce", size))
+                        if (ImGui.Button($"精选中...点击来中止###AbortReduce", size))
                         {
                             Reducing = false;
                             TaskManager.Abort();
@@ -134,10 +134,11 @@ namespace PandorasBox.Features.UI
 
         private bool? ConfirmDialog()
         {
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39]) return false;
-            if (Svc.GameGui.GetAddonByName("PurifyResult",1) != IntPtr.Zero)
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39])
+                return false;
+            if (Svc.GameGui.GetAddonByName("PurifyResult", 1) != IntPtr.Zero)
             {
-                var addon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("PurifyResult",1).Address;
+                var addon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("PurifyResult", 1).Address;
                 addon->Close(true);
                 return true;
             }
@@ -147,7 +148,8 @@ namespace PandorasBox.Features.UI
 
         private bool? SelectFirstItem(AtkUnitBase* addon)
         {
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39]) return false;
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39])
+                return false;
             TaskManager.InsertMulti([new(() => EzThrottler.Throttle("Generating", 1000)), new(() => EzThrottler.Check("Generating"))]);
 
             var values = stackalloc AtkValue[2];

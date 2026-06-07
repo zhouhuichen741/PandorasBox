@@ -1,10 +1,10 @@
+using Dalamud.Bindings.ImGui;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
 using ECommons.Throttlers;
 using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Dalamud.Bindings.ImGui;
 using PandorasBox.FeaturesSetup;
 using PandorasBox.Helpers;
 using PandorasBox.UI;
@@ -15,9 +15,9 @@ namespace PandorasBox.Features.UI
 {
     public unsafe class ExtractAll : Feature
     {
-        public override string Name => "Extract All Materia";
+        public override string Name => "精制所有魔晶石";
 
-        public override string Description => "Adds a button to the extract materia window to start extracting all.";
+        public override string Description => "在“精制魔晶石”窗口中添加一个按钮，来开始精制所有魔晶石。";
 
         public override FeatureType FeatureType => FeatureType.UI;
 
@@ -75,7 +75,7 @@ namespace PandorasBox.Features.UI
 
                     if (!Extracting)
                     {
-                        if (ImGui.Button($"Extract All###StartExtract", size))
+                        if (ImGui.Button($"精制所有###StartExtract", size))
                         {
                             Extracting = true;
                             TryExtractAll();
@@ -83,7 +83,7 @@ namespace PandorasBox.Features.UI
                     }
                     else
                     {
-                        if (ImGui.Button($"Extracting. Click to abort.###AbortExtract", size))
+                        if (ImGui.Button($"精制中...点击来中止###AbortExtract", size))
                         {
                             Abort();
                         }
@@ -372,7 +372,8 @@ namespace PandorasBox.Features.UI
 
         public unsafe bool? SwitchTabs(int section)
         {
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39]) return false;
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39])
+                return false;
             TaskManager.InsertMulti([new(() => EzThrottler.Throttle("Switching", 300)), new(() => EzThrottler.Check("Switching"))]);
 
             if (Svc.GameGui.GetAddonByName("Materialize", 1) != IntPtr.Zero)
@@ -404,8 +405,10 @@ namespace PandorasBox.Features.UI
         {
             try
             {
-                if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39]) return false;
-                if (Svc.GameGui.GetAddonByName("Materialize") == IntPtr.Zero) return true;
+                if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39])
+                    return false;
+                if (Svc.GameGui.GetAddonByName("Materialize") == IntPtr.Zero)
+                    return true;
 
                 var materializePTR = Svc.GameGui.GetAddonByName("MaterializeDialog", 1);
                 if (materializePTR == IntPtr.Zero)
@@ -431,7 +434,8 @@ namespace PandorasBox.Features.UI
 
         public bool? GenerateAndFireCallback()
         {
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39]) return false;
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39])
+                return false;
             TaskManager.InsertMulti([new(() => EzThrottler.Throttle("Generating", 100), "Generating"), new(() => EzThrottler.Check("Generating"), "GeneratingCheck")]);
 
             var values = stackalloc AtkValue[2];
@@ -447,7 +451,8 @@ namespace PandorasBox.Features.UI
             };
 
             var ptr = (AtkUnitBase*)Svc.GameGui.GetAddonByName("Materialize", 1).Address;
-            if (ptr == null) return true;
+            if (ptr == null)
+                return true;
 
             ptr->FireCallback(2, values);
 

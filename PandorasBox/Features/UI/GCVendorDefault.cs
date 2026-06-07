@@ -1,9 +1,9 @@
+using Dalamud.Bindings.ImGui;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using ECommons.Automation.UIInput;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 using PandorasBox.FeaturesSetup;
 using System.Collections.Generic;
@@ -13,9 +13,9 @@ namespace PandorasBox.Features.UI
 {
     public unsafe class GCVendorDefault : Feature
     {
-        public override string Name => "Default Grand Company Shop Menu";
+        public override string Name => "大国防联军补给默认菜单";
 
-        public override string Description => "Sets the default tab in the grand company menu when you open it.";
+        public override string Description => "在打开大国防联军补给菜单时设置该菜单中的默认选项卡。";
 
         public override FeatureType FeatureType => FeatureType.UI;
 
@@ -31,9 +31,9 @@ namespace PandorasBox.Features.UI
 
         private List<string> Tabs { get; set; } = new()
         {
-            "Top Tab",
-            "Middle Tab",
-            "Bottom Tab"
+            "上标签",
+            "中标签",
+            "下标签"
         };
 
         private List<string> Categories { get; set; } = Svc.Data.GetExcelSheet<GCShopItemCategory>()
@@ -93,7 +93,7 @@ namespace PandorasBox.Features.UI
         protected override DrawConfigDelegate DrawConfigTree => (ref bool hasChanged) =>
         {
             var prevRank = Tabs[Config.DefaultRank];
-            if (ImGui.BeginCombo("Select Rank", prevRank))
+            if (ImGui.BeginCombo("选择等级", prevRank))
             {
                 for (var i = 0; i < Tabs.Count; i++)
                 {
@@ -108,7 +108,7 @@ namespace PandorasBox.Features.UI
             }
 
             var prevTab = Categories[Config.DefaultTab];
-            if (ImGui.BeginCombo("Select Category", prevTab))
+            if (ImGui.BeginCombo("选择分类", prevTab))
             {
                 for (var i = 0; i < Categories.Count; i++)
                 {

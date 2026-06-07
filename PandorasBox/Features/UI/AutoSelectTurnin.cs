@@ -12,9 +12,9 @@ namespace PandorasBox.Features.UI
 {
     public unsafe class AutoSelectTurnin : Feature
     {
-        public override string Name => "Auto-select Turn-ins";
+        public override string Name => "自动提交道具";
 
-        public override string Description => "Whenever you have to select an item to turn in, it will automatically fill in the interface.";
+        public override string Description => "每当你必须选择一个要上交的道具时，它会自动上交道具。";
 
         public override FeatureType FeatureType => FeatureType.UI;
 
@@ -22,7 +22,7 @@ namespace PandorasBox.Features.UI
 
         public class Configs : FeatureConfig
         {
-            [FeatureConfigOption("Automatically Confirm")]
+            [FeatureConfigOption("自动确认")]
             public bool AutoConfirm = false;
         }
 
@@ -43,8 +43,10 @@ namespace PandorasBox.Features.UI
             {
                 for (var i = 1; i <= addon->EntryCount; i++)
                 {
-                    if (SlotsFilled.Contains(addon->EntryCount)) ConfirmOrAbort(addon);
-                    if (SlotsFilled.Contains(i)) return;
+                    if (SlotsFilled.Contains(addon->EntryCount))
+                        ConfirmOrAbort(addon);
+                    if (SlotsFilled.Contains(i))
+                        return;
                     var val = i;
                     TaskManager.EnqueueDelay(10);
                     TaskManager.Enqueue(() => TryClickItem(addon, val));
@@ -59,7 +61,8 @@ namespace PandorasBox.Features.UI
 
         private bool? TryClickItem(AddonRequest* addon, int i)
         {
-            if (SlotsFilled.Contains(i)) return true;
+            if (SlotsFilled.Contains(i))
+                return true;
 
             var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("ContextIconMenu", 1).Address;
 

@@ -1,20 +1,20 @@
-using System.Collections.Generic;
-using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using System.Collections.Generic;
+using System.Linq;
 using Character = Dalamud.Game.ClientState.Objects.Types.ICharacter;
 
 namespace PandorasBox.Features.Commands
 {
     public unsafe class ResetEnmity : CommandFeature
     {
-        public override string Name => "Reset Enmity";
+        public override string Name => "重置仇恨";
         public override string Command { get; set; } = "/presetenmity";
         public override string[] Alias => ["/pre"];
 
         public override List<string> Parameters => ["t", "a"];
-        public override string Description => "Resets combat with target dummies. Accepts arguments for t(arget) or a(ll). Defaults to all.";
+        public override string Description => "重置当前木人的战斗仇恨。接受参数 `t`当前 或 `a`全部。默认为 `a`。";
         protected override void OnCommand(List<string> args)
         {
             foreach (var p in Parameters)

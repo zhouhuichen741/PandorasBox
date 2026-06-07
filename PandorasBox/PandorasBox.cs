@@ -29,22 +29,25 @@ public class PandorasBox : IDalamudPlugin
     public List<FeatureProvider> FeatureProviders = [];
     private FeatureProvider provider;
     public IEnumerable<BaseFeature> Features => FeatureProviders.Where(x => !x.Disposed).SelectMany(x => x.Features).OrderBy(x => x.Name);
-    public PandorasBox(IDalamudPluginInterface pluginInterface, IFramework framework)
+    private bool isDev;
+
+    public PandorasBox(IDalamudPluginInterface pluginInterface)
     {
+        if (pluginInterface.IsDev || !pluginInterface.SourceRepository.Contains("zhouhuichen741"))
+        {
+            isDev = true;
+            return;
+        }
         P = this;
         Ws = new();
         MainWindow = new();
         provider = new FeatureProvider(Assembly.GetExecutingAssembly());
-        _ = framework.RunOnFrameworkThread(() =>
+        ECommonsMain.Init(pluginInterface, P, ECommons.Module.All);
+        sheetManager = new(pluginInterface, Svc.Data.GameData, new()
         {
-            ECommonsMain.Init(pluginInterface, P, ECommons.Module.All);
-            sheetManager = new(pluginInterface, Svc.Data.GameData, new()
-            {
-                BuildItemInfoCache = true,
-
-            });
-            Initialize();
+            BuildItemInfoCache = true,
         });
+        Initialize();
     }
 
     private void Initialize()
@@ -57,7 +60,7 @@ public class PandorasBox : IDalamudPlugin
 
         _ = Svc.Commands.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "Opens the Pandora menu.",
+            HelpMessage = "打开PandorasBox菜单。",
             ShowInHelp = true
         });
 
@@ -72,6 +75,8 @@ public class PandorasBox : IDalamudPlugin
 
     public void Dispose()
     {
+        if (isDev)
+            return;
         Svc.Commands.RemoveHandler(CommandName);
         foreach (var f in Features.Where(x => x is not null && x.Enabled))
         {

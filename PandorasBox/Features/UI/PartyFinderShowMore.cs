@@ -8,9 +8,9 @@ namespace PandorasBox.Features.UI
 {
     public unsafe class PartyFinderShowMore : Feature
     {
-        public override string Name => "Party Finder Show More";
+        public override string Name => "[国服限定][已转正] 招募板单页扩容";
 
-        public override string Description => "Raise the display limit from 50 to the 100 limit actually allowed by the game.";
+        public override string Description => "将显示限制从 50 提高到游戏实际允许的 100 限制。";
 
         public override FeatureType FeatureType => FeatureType.UI;
 
@@ -19,7 +19,7 @@ namespace PandorasBox.Features.UI
 
         private char PartyFinderDetour(AgentLookingForGroup* a1, int a2)
         {
-            Marshal.WriteInt16(new nint(a1 + 1152), 100);
+            Marshal.WriteInt16(new nint(a1) + 1152, 100);
             return partyFinderHook.Original(a1, a2);
         }
 

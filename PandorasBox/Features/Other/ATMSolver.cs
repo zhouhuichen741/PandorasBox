@@ -9,8 +9,8 @@ namespace PandorasBox.Features.Other
 {
     internal class ATMSolver : Feature
     {
-        public override string Name { get; } = "Auto Active Time Maneuver";
-        public override string Description { get; } = "Automatically hits a button or mashes for you when the ATM is on screen.";
+        public override string Name { get; } = "自动动态演练 (俗称QTE)";
+        public override string Description { get; } = "当动态演练在屏幕上时，自动为您点击按钮或捣碎。";
 
         public override FeatureType FeatureType => FeatureType.Other;
         private long Throttler { get; set; } = Environment.TickCount64;
@@ -34,7 +34,7 @@ namespace PandorasBox.Features.Other
                     if (ChatLogIsFocused())
                         WindowsKeypress.SendKeypress(ECommons.Interop.LimitedKeys.Escape);
 
-                    WindowsKeypress.SendKeypress(ECommons.Interop.LimitedKeys.A); //Mashes to try and resolve the QTE
+                    WindowsKeypress.SendKeypress(ECommons.Interop.LimitedKeys.X); //Mashes to try and resolve the QTE
                     Throttler = Environment.TickCount64 + random.Next(25, 50);
                 }
             }

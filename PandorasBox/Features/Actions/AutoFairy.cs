@@ -8,24 +8,24 @@ namespace PandorasBox.Features.Actions
 {
     public unsafe class AutoFairy : Feature
     {
-        public override string Name => "Auto-Summon Fairy/Carbuncle";
+        public override string Name => "自动召唤仙女/宝石兽";
 
-        public override string Description => "Automatically summons your Fairy or Carbuncle upon switching to SCH or SMN respectively.";
+        public override string Description => "切换到学者或召唤时自动召唤仙女或宝石兽。";
 
         public override FeatureType FeatureType => FeatureType.Actions;
 
         public class Configs : FeatureConfig
         {
-            [FeatureConfigOption("Set delay (seconds)", FloatMin = 0.1f, FloatMax = 10f, EditorSize = 300)]
+            [FeatureConfigOption("设置延迟 (秒)", FloatMin = 0.1f, FloatMax = 10f, EditorSize = 300)]
             public float ThrottleF = 0.1f;
 
-            [FeatureConfigOption("Trigger at Duty Start")]
+            [FeatureConfigOption("副本开始时触发")]
             public bool DutyStart = false;
 
-            [FeatureConfigOption("Trigger on Respawn")]
+            [FeatureConfigOption("复活时触发")]
             public bool OnRespawn = false;
 
-            [FeatureConfigOption("Trigger on Job Change")]
+            [FeatureConfigOption("切换职业后触发")]
             public bool OnJobChange = true;
         }
 
@@ -44,9 +44,11 @@ namespace PandorasBox.Features.Actions
 
         private void CheckForDuty(uint obj)
         {
-            if (!Config.DutyStart) return;
+            if (!Config.DutyStart)
+                return;
 
-            if (GameMain.Instance()->CurrentContentFinderConditionId == 0) return;
+            if (GameMain.Instance()->CurrentContentFinderConditionId == 0)
+                return;
 
             TaskManager.Enqueue(() => !Svc.Condition[ConditionFlag.BetweenAreas]);
             TaskManager.Enqueue(() => ActionManager.Instance()->GetActionStatus(ActionType.Action, 7) == 0);
@@ -56,9 +58,11 @@ namespace PandorasBox.Features.Actions
 
         private void RunFeature(uint? jobId)
         {
-            if (!Config.OnJobChange) return;
+            if (!Config.OnJobChange)
+                return;
 
-            if (Svc.Condition[ConditionFlag.BetweenAreas]) return;
+            if (Svc.Condition[ConditionFlag.BetweenAreas])
+                return;
             if (jobId is 26 or 27 or 28)
             {
                 TaskManager.EnqueueDelay((int)(Config.ThrottleF * 1000));
@@ -68,7 +72,8 @@ namespace PandorasBox.Features.Actions
 
         private void CheckIfRespawned(ConditionFlag flag, bool value)
         {
-            if (!Config.OnRespawn) return;
+            if (!Config.OnRespawn)
+                return;
 
             if (flag == ConditionFlag.Unconscious && !value && !Svc.Condition[ConditionFlag.InCombat])
             {
@@ -83,18 +88,21 @@ namespace PandorasBox.Features.Actions
 
         public bool TrySummon(uint? jobId)
         {
-            if (Svc.Buddies.PetBuddy != null) return true;
+            if (Svc.Buddies.PetBuddy != null)
+                return true;
 
             var am = ActionManager.Instance();
             if (jobId is 26 or 27)
             {
-                if (am->GetActionStatus(ActionType.Action, 25798) != 0) return false;
+                if (am->GetActionStatus(ActionType.Action, 25798) != 0)
+                    return false;
 
                 am->UseAction(ActionType.Action, 25798);
             }
             if (jobId is 28)
             {
-                if (am->GetActionStatus(ActionType.Action, 17215) != 0) return false;
+                if (am->GetActionStatus(ActionType.Action, 17215) != 0)
+                    return false;
 
                 am->UseAction(ActionType.Action, 17215);
                 return true;

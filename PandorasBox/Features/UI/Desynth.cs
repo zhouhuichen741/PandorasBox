@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Hooking;
 using ECommons.DalamudServices;
@@ -12,15 +9,18 @@ using Lumina.Excel.Sheets;
 using PandorasBox.FeaturesSetup;
 using PandorasBox.Helpers;
 using PandorasBox.UI;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
 using static ECommons.GenericHelpers;
 
 namespace PandorasBox.Features.UI
 {
     public unsafe class Desynth : Feature
     {
-        public override string Name => "Desynth All";
+        public override string Name => "道具分解全部";
 
-        public override string Description => "Adds a button to the desynthesis window to desynth all from the current dropdown. (Disclaimer: Pandora takes no responsibility for the loss of any Ultimate weapons or other rare items. Please use responsibly.)";
+        public override string Description => "在道具分解窗口中添加一个按钮，分解当前下拉列表中的全部道具。（免责声明：PandorasBox对任何绝本武器或其他稀有物品的损失不承担任何责任，请负责任地使用。";
 
         private delegate IntPtr UpdateItemDelegate(IntPtr a1, ulong index, IntPtr a3, ulong a4);
         private Hook<AddonSalvageItemSelector.Delegates.PopulateSalvageItemListItem> updateItemHook = null!;
@@ -97,13 +97,13 @@ namespace PandorasBox.Features.UI
 
                     if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Mounted])
                     {
-                        ImGui.Text("You are mounted, please dismount");
+                        ImGui.Text("你在骑乘中，请先下坐骑");
                     }
                     else
                     {
                         if (!Desynthing)
                         {
-                            if (ImGui.Button($"Desynth All"))
+                            if (ImGui.Button($"全部分解"))
                             {
                                 Desynthing = true;
                                 TaskManager.Enqueue(YesAlready.Lock);
@@ -112,7 +112,7 @@ namespace PandorasBox.Features.UI
                         }
                         else
                         {
-                            if (ImGui.Button("Desynthing. Click to Abort."))
+                            if (ImGui.Button("分解中...点击来中止"))
                             {
                                 Desynthing = false;
                                 TaskManager.Abort();
@@ -161,27 +161,33 @@ namespace PandorasBox.Features.UI
 
         private bool? CloseResults()
         {
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied]) return false;
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied])
+                return false;
             var addon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("SalvageResult", 1).Address;
-            if (addon == null || !addon->IsVisible) return false;
+            if (addon == null || !addon->IsVisible)
+                return false;
             addon->Close(true);
             return true;
         }
 
         private bool? ConfirmDesynth()
         {
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied]) return false;
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied])
+                return false;
             var addon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("SalvageDialog", 1).Address;
-            if (addon == null || !addon->IsVisible) return false;
+            if (addon == null || !addon->IsVisible)
+                return false;
             ECommons.Automation.Callback.Fire(addon, false, 0, false);
             return Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied39];
         }
 
         private static bool? DesynthFirst()
         {
-            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied]) return false;
+            if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Occupied])
+                return false;
             var addon = (AtkUnitBase*)Svc.GameGui.GetAddonByName("SalvageItemSelector", 1).Address;
-            if (addon == null) return null;
+            if (addon == null)
+                return null;
             ECommons.Automation.Callback.Fire(addon, false, 12, 0);
             return true;
         }

@@ -1,10 +1,10 @@
+using Dalamud.Bindings.ImGui;
 using Dalamud.Game.ClientState.Conditions;
 using ECommons;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
-using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 using PandorasBox.FeaturesSetup;
 using PandorasBox.Helpers;
@@ -15,9 +15,9 @@ namespace PandorasBox.Features.Targets
 {
     public unsafe class AutoInteractDungeons : Feature
     {
-        public override string Name => "Auto-interact with Objects in Instances";
+        public override string Name => "自动与副本中的物体交互";
 
-        public override string Description => "Automatically try to pick all the keys, levers, and other thingymabobs. Also works to try and open doors and stuff. (VERY EXPERIMENTAL)";
+        public override string Description => "自动尝试捡起所有的钥匙、杠杆和其他东西。也可以尝试打开门和其他东西。（非常实验性）";
 
         public override FeatureType FeatureType => FeatureType.Targeting;
 
@@ -90,12 +90,15 @@ namespace PandorasBox.Features.Targets
                 TaskManager.Abort();
                 return;
             }
-            if (Svc.Objects.LocalPlayer == null) return;
+            if (Svc.Objects.LocalPlayer == null)
+                return;
 
             if (GameMain.Instance()->CurrentContentFinderConditionId > 0)
             {
-                if (Svc.Condition[ConditionFlag.InCombat] && Config.ExcludeCombat) { TaskManager.Abort(); return; }
-                if (IsMoving() && Config.OnlyStanding) { TaskManager.Abort(); return; }
+                if (Svc.Condition[ConditionFlag.InCombat] && Config.ExcludeCombat)
+                { TaskManager.Abort(); return; }
+                if (IsMoving() && Config.OnlyStanding)
+                { TaskManager.Abort(); return; }
 
                 var nearbyNodes = Svc.Objects.Where(x => x.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.EventObj &&
                                                     GameObjectHelper.GetTargetDistance(x) <= Config.MaxDistance &&
@@ -111,7 +114,8 @@ namespace PandorasBox.Features.Targets
                         var nearestNode = nearbyNodes.First(x => x.BaseId == Svc.Targets.Target.BaseId);
                         var baseObj = (GameObject*)nearestNode.Address;
 
-                        if (!TargetSystem.Instance()->IsObjectInViewRange(baseObj) || !TargetSystem.Instance()->IsObjectOnScreen(baseObj)) return;
+                        if (!TargetSystem.Instance()->IsObjectInViewRange(baseObj) || !TargetSystem.Instance()->IsObjectOnScreen(baseObj))
+                            return;
 
                         TaskManager.EnqueueDelay((int)(Config.ThrottleF * 1000));
                         TaskManager.Enqueue(() => TryInteract(baseObj));
@@ -122,9 +126,12 @@ namespace PandorasBox.Features.Targets
                 foreach (var nearestNode in nearbyNodes.OrderBy(GameObjectHelper.GetTargetDistance))
                 {
                     var baseObj = (GameObject*)nearestNode.Address;
-                    if (baseObj->RenderFlags != 0) continue;
-                    if (string.IsNullOrEmpty(baseObj->NameString)) continue;
-                    if (!TargetSystem.Instance()->IsObjectInViewRange(baseObj)) continue;
+                    if (baseObj->RenderFlags != 0)
+                        continue;
+                    if (string.IsNullOrEmpty(baseObj->NameString))
+                        continue;
+                    if (!TargetSystem.Instance()->IsObjectInViewRange(baseObj))
+                        continue;
 
                     if (Svc.Data.GetExcelSheet<EObj>().TryGetFirst(x => x.RowId == baseObj->BaseId, out var sheetItem))
                         if (Config.ExcludeExit && (sheetItem.SgbPath.ValueNullable?.SgbPath.ToString().Contains("bgcommon/world/lvd/shared/for_vfx/sgvf_w_lvd_b0005.sgb") == true || Exits.Contains(sheetItem.RowId)))
@@ -132,7 +139,8 @@ namespace PandorasBox.Features.Targets
 
                     if (!TaskManager.IsBusy)
                     {
-                        if (Svc.Condition[ConditionFlag.OccupiedInQuestEvent]) continue;
+                        if (Svc.Condition[ConditionFlag.OccupiedInQuestEvent])
+                            continue;
                         TaskManager.EnqueueDelay((int)(Config.ThrottleF * 1000));
                         TaskManager.Enqueue(() => TryInteract(baseObj));
                     }
@@ -154,25 +162,32 @@ namespace PandorasBox.Features.Targets
         {
             var defaultAttr = new FeatureConfigOptionAttribute("");
             ImGui.PushItemWidth(300);
-            if (ImGui.SliderFloat($"Set delay (seconds)", ref Config.ThrottleF, 0.1f, 10f, defaultAttr.Format)) hasChanged = true;
-            if (ImGui.SliderFloat($"Cooldown after interacting (seconds)", ref Config.Cooldown, 0.1f, 10f, defaultAttr.Format)) hasChanged = true;
-            if (ImGui.SliderFloat($"Max Distance (yalms)", ref Config.MaxDistance, 0.5f, 5f, defaultAttr.Format)) hasChanged = true;
-            if (ImGui.SliderFloat($"Max Height Difference (yalms)", ref Config.MaxHeight, 0.1f, 10f, defaultAttr.Format)) hasChanged = true;
-            if (ImGui.Checkbox($"Exclude Combat", ref Config.ExcludeCombat)) hasChanged = true;
-            if (ImGui.Checkbox($"Exclude Exits", ref Config.ExcludeExit)) hasChanged = true;
-            if (ImGui.Checkbox($"Only Attempt Whilst Not Moving", ref Config.OnlyStanding)) hasChanged = true;
+            if (ImGui.SliderFloat($"设置延迟 (秒)", ref Config.ThrottleF, 0.1f, 10f, defaultAttr.Format))
+                hasChanged = true;
+            if (ImGui.SliderFloat($"交互后冷却 (秒)", ref Config.Cooldown, 0.1f, 10f, defaultAttr.Format))
+                hasChanged = true;
+            if (ImGui.SliderFloat($"最大距离 (yalms)", ref Config.MaxDistance, 0.5f, 5f, defaultAttr.Format))
+                hasChanged = true;
+            if (ImGui.SliderFloat($"最大高度差 (yalms)", ref Config.MaxHeight, 0.1f, 10f, defaultAttr.Format))
+                hasChanged = true;
+            if (ImGui.Checkbox($"战斗中禁用", ref Config.ExcludeCombat))
+                hasChanged = true;
+            if (ImGui.Checkbox($"排除出口", ref Config.ExcludeExit))
+                hasChanged = true;
+            if (ImGui.Checkbox($"仅在不移动的情况下尝试", ref Config.OnlyStanding))
+                hasChanged = true;
 
-            if (ImGui.RadioButton($"Try Interact Method 1 (interacts with most things)", Config.InteractMethod == 1))
+            if (ImGui.RadioButton($"尝试交互方法1 (与大多数事物交互)", Config.InteractMethod == 1))
             {
                 Config.InteractMethod = 1;
                 hasChanged = true;
             }
-            if (ImGui.RadioButton($"Try Interact Method 2 (interacts with things method 1 doesn't)", Config.InteractMethod == 2))
+            if (ImGui.RadioButton($"尝试交互方法2 (与方法1没有的东西交互)", Config.InteractMethod == 2))
             {
                 Config.InteractMethod = 2;
                 hasChanged = true;
             }
-            if (ImGui.RadioButton($"Try Interact with Both Methods (buggy on many things, use with caution)", Config.InteractMethod == 3))
+            if (ImGui.RadioButton($"尝试使用两种方法进行交互 (在许多事情上都有错误，请谨慎使用)", Config.InteractMethod == 3))
             {
                 Config.InteractMethod = 3;
                 hasChanged = true;

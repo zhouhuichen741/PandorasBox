@@ -13,8 +13,8 @@ namespace PandorasBox.Features.UI
 {
     internal class SimplifyRelicQuest : Feature
     {
-        public override string Name { get; } = "Simplify Relic Quest Pickup";
-        public override string Description { get; } = "Adds a description of what stage a quest is for when talking to the NPC.";
+        public override string Name { get; } = "简化遗物任务拾取";
+        public override string Description { get; } = "在与 NPC 对话时，添加任务所处阶段的说明。";
         public override bool FeatureDisabled => true;
 
         public override string DisabledReason => "No longer being supported. Someone please PR further updates ty.";
@@ -61,10 +61,12 @@ namespace PandorasBox.Features.UI
                     foreach (var index in Enumerable.Range(0, list->ListLength))
                     {
                         var listItemRenderer = list->ItemRendererList[index].AtkComponentListItemRenderer;
-                        if (listItemRenderer is null) continue;
+                        if (listItemRenderer is null)
+                            continue;
 
                         var buttonTextNode = listItemRenderer->AtkComponentButton.ButtonTextNode;
-                        if (buttonTextNode is null) continue;
+                        if (buttonTextNode is null)
+                            continue;
 
                         UpdateAddonText(buttonTextNode, out var questReplacedId);
                     }
@@ -87,10 +89,12 @@ namespace PandorasBox.Features.UI
                     foreach (var index in Enumerable.Range(0, list->ListLength))
                     {
                         var listItemRenderer = list->ItemRendererList[index].AtkComponentListItemRenderer;
-                        if (listItemRenderer is null) continue;
+                        if (listItemRenderer is null)
+                            continue;
 
                         var buttonTextNode = listItemRenderer->AtkComponentButton.ButtonTextNode;
-                        if (buttonTextNode is null) continue;
+                        if (buttonTextNode is null)
+                            continue;
 
                         UpdateAddonText(buttonTextNode, out var questReplacedId);
                     }

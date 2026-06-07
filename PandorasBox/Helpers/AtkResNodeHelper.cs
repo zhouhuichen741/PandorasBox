@@ -17,6 +17,7 @@ namespace PandorasBox.Helpers
         
         public static unsafe Vector2 GetNodePosition(AtkResNode* node)
         {
+            if (node == null) return Vector2.Zero;
             var pos = new Vector2(node->X, node->Y);
             var par = node->ParentNode;
             while (par != null)

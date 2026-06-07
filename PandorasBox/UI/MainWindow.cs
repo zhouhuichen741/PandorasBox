@@ -1,3 +1,4 @@
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility.Raii;
@@ -6,7 +7,6 @@ using Dalamud.Utility;
 using ECommons;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
-using Dalamud.Bindings.ImGui;
 using PandorasBox.Features;
 using PandorasBox.Features.ChatFeature;
 using PandorasBox.FeaturesSetup;
@@ -23,7 +23,7 @@ namespace PandorasBox.UI;
 
 internal class MainWindow : Window
 {
-    public OpenWindow OpenWindow { get; private set; } = OpenWindow.None;
+    public OpenWindow OpenWindow { get; private set; } = OpenWindow.关于;
 
     public bool ThemePushed = false;
 
@@ -153,7 +153,8 @@ internal class MainWindow : Window
 
                     foreach (var window in Enum.GetValues(typeof(OpenWindow)))
                     {
-                        if ((OpenWindow)window == OpenWindow.None) continue;
+                        if ((OpenWindow)window == OpenWindow.None)
+                            continue;
 
                         if (ImGui.Selectable($"{window}", OpenWindow == (OpenWindow)window))
                         {
@@ -164,7 +165,7 @@ internal class MainWindow : Window
                     ImGui.Spacing();
                     if (Config.DisabledTheme)
                     {
-                        if (ImGui.Selectable("Enable Theme", false))
+                        if (ImGui.Selectable("启用主题", false))
                         {
                             Config.DisabledTheme = false;
                             Config.Save();
@@ -172,7 +173,7 @@ internal class MainWindow : Window
                     }
                     else
                     {
-                        if (ImGui.Selectable("Disable Theme", false))
+                        if (ImGui.Selectable("禁用主题", false))
                         {
                             Config.DisabledTheme = true;
                             Config.Save();
@@ -180,7 +181,7 @@ internal class MainWindow : Window
                     }
 
                     ImGui.SetCursorPosY(ImGui.GetContentRegionMax().Y - 45f);
-                    ImGuiEx.LineCentered("###Search", () => { ImGui.Text($"Search"); ImGuiComponents.HelpMarker("Searches feature names and descriptions for a given word or phrase."); });
+                    ImGuiEx.LineCentered("###Search", () => { ImGui.Text($"搜索"); ImGuiComponents.HelpMarker("搜索给定单词或短语的功能名称和描述。"); });
                     ImGuiEx.SetNextItemFullWidth();
                     if (ImGui.InputText("###FeatureSearch", ref searchString, 500))
                     {
@@ -198,7 +199,8 @@ internal class MainWindow : Window
                         {
                             foreach (var feature in P.Features)
                             {
-                                if (feature.FeatureType == FeatureType.Commands) continue;
+                                if (feature.FeatureType == FeatureType.Commands)
+                                    continue;
 
                                 if (feature.Description.Contains(searchString, StringComparison.CurrentCultureIgnoreCase) ||
                                     feature.Name.Contains(searchString, StringComparison.CurrentCultureIgnoreCase))
@@ -221,25 +223,25 @@ internal class MainWindow : Window
                     {
                         switch (OpenWindow)
                         {
-                            case OpenWindow.Actions:
+                            case OpenWindow.技能:
                                 DrawFeatures(P.Features.Where(x => x.FeatureType == FeatureType.Actions).ToArray());
                                 break;
                             case OpenWindow.UI:
                                 DrawFeatures(P.Features.Where(x => x.FeatureType == FeatureType.UI).ToArray());
                                 break;
-                            case OpenWindow.Other:
+                            case OpenWindow.其他:
                                 DrawFeatures(P.Features.Where(x => x.FeatureType == FeatureType.Other).ToArray());
                                 break;
-                            case OpenWindow.Targets:
+                            case OpenWindow.目标:
                                 DrawFeatures(P.Features.Where(x => x.FeatureType == FeatureType.Targeting).ToArray());
                                 break;
-                            case OpenWindow.Chat:
+                            case OpenWindow.聊天:
                                 DrawFeatures(P.Features.Where(x => x.FeatureType == FeatureType.ChatFeature).ToArray());
                                 break;
-                            case OpenWindow.Commands:
+                            case OpenWindow.指令:
                                 DrawCommands(P.Features.Where(x => x.FeatureType == FeatureType.Commands).ToArray());
                                 break;
-                            case OpenWindow.About:
+                            case OpenWindow.关于:
                                 AboutTab.Draw("Pandora's Box");
                                 break;
                         }
@@ -247,7 +249,7 @@ internal class MainWindow : Window
                 }
                 ImGui.EndChild();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ex.Log();
                 ImGui.EndTable();
@@ -258,22 +260,24 @@ internal class MainWindow : Window
 
     private static void DrawCommands(BaseFeature[] features)
     {
-        if (features == null || !features.Any() || features.Length == 0) return;
+        if (features == null || !features.Any() || features.Length == 0)
+            return;
         ImGuiEx.LineCentered($"featureHeader{features.First().FeatureType}", () => ImGui.Text($"{features.First().FeatureType}"));
         ImGui.Separator();
 
         if (ImGui.BeginTable("###CommandsTable", 5, ImGuiTableFlags.Borders))
         {
-            ImGui.TableSetupColumn("Name");
-            ImGui.TableSetupColumn("Command");
-            ImGui.TableSetupColumn("Parameters");
-            ImGui.TableSetupColumn("Description");
-            ImGui.TableSetupColumn("Aliases");
+            ImGui.TableSetupColumn("名字");
+            ImGui.TableSetupColumn("指令");
+            ImGui.TableSetupColumn("参数");
+            ImGui.TableSetupColumn("描述");
+            ImGui.TableSetupColumn("别名");
 
             ImGui.TableHeadersRow();
             foreach (var feature in features.Cast<CommandFeature>())
             {
-                if (feature.Disabled) continue;
+                if (feature.Disabled)
+                    continue;
 
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
@@ -295,13 +299,14 @@ internal class MainWindow : Window
 
     private void DrawFeatures(IEnumerable<BaseFeature> features)
     {
-        if (features == null || !features.Any() || !features.Any()) return;
+        if (features == null || !features.Any() || !features.Any())
+            return;
 
         ImGuiEx.LineCentered($"featureHeader{features.First().FeatureType}", () =>
         {
             if (filteredFeatures.Count > 0)
             {
-                ImGui.Text($"Search Results");
+                ImGui.Text($"搜索结果");
             }
             else
                 ImGui.Text($"{features.First().FeatureType}");
@@ -350,10 +355,10 @@ internal class MainWindow : Window
                 ImGui.Spacing();
                 ImGui.TextWrapped($"{feature.Description}");
             }
-                if (feature.FeatureDisabled)
-                    ImGuiEx.Text(ImGuiColors.DalamudRed, $"Disabled Reason: {feature.DisabledReason}");
+            if (feature.FeatureDisabled)
+                ImGuiEx.Text(ImGuiColors.DalamudRed, $"禁用原因: {feature.DisabledReason}");
 
-                ImGui.Separator();
+            ImGui.Separator();
         }
     }
 }
@@ -361,11 +366,11 @@ internal class MainWindow : Window
 public enum OpenWindow
 {
     None,
-    Actions,
+    技能,
     UI,
-    Targets,
-    Chat,
-    Other,
-    Commands,
-    About
+    目标,
+    聊天,
+    其他,
+    指令,
+    关于
 }
