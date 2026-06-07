@@ -1,9 +1,9 @@
-using Dalamud.Bindings.ImGui;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using ECommons.Automation.UIInput;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 using PandorasBox.FeaturesSetup;
 using System.Collections.Generic;
@@ -60,15 +60,25 @@ namespace PandorasBox.Features.UI
 
         private static void SelectRank(AtkUnitBase* addon, int defaultRank)
         {
-            var rankButton = defaultRank switch
+            foreach (var rankIndex in Enumerable.Range(0, 3))
             {
-                0 => addon->GetNodeById(37)->GetAsAtkComponentRadioButton(),
-                1 => addon->GetNodeById(38)->GetAsAtkComponentRadioButton(),
-                2 => addon->GetNodeById(39)->GetAsAtkComponentRadioButton(),
-                _ => throw new System.NotImplementedException()
-            };
-            rankButton->ClickRadioButton((AtkComponentBase*)addon, (uint)defaultRank);
+                var rankButton = rankIndex switch
+                {
+                    0 => addon->GetNodeById(37)->GetAsAtkComponentRadioButton(),
+                    1 => addon->GetNodeById(38)->GetAsAtkComponentRadioButton(),
+                    2 => addon->GetNodeById(39)->GetAsAtkComponentRadioButton(),
+                    _ => throw new System.NotImplementedException()
+                };
+
+                var state = rankIndex == defaultRank;
+                rankButton->IsSelected = state;
+                rankButton->IsChecked = state;
+
+                if (state)
+                    rankButton->ClickRadioButton(addon);
+            }
         }
+
 
         private static void SelectTab(AtkUnitBase* addon, int defaultTab)
         {
