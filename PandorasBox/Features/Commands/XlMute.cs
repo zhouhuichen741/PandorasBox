@@ -31,11 +31,11 @@ namespace PandorasBox.Features.Commands
             base.Enable();
 
             Svc.Commands.AddHandler("/pmutelist", new Dalamud.Game.Command.CommandInfo(OnListCommand)
-            { HelpMessage = "列出所有被屏蔽的词语。" });
+            { HelpMessage = "[Pandora's Box 自定义屏蔽词]", ShowInHelp = false });
             extraRegisteredCommands.Add("/pmutelist");
 
             Svc.Commands.AddHandler("/punmute", new Dalamud.Game.Command.CommandInfo(OnUnmuteCommand)
-            { HelpMessage = "取消屏蔽指定词语。用法: /punmute <词语>" });
+            { HelpMessage = "[Pandora's Box 自定义屏蔽词]", ShowInHelp = false });
             extraRegisteredCommands.Add("/punmute");
         }
 
