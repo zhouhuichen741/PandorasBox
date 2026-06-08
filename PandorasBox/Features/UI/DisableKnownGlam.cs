@@ -17,7 +17,7 @@ namespace PandorasBox.Features.UI
     {
         public override string Name => "禁止重复添加已知幻化到幻化衣柜";
 
-        public override string Description => "如果道具已存在于幻化衣柜中，则禁止将其再次投入幻化衣柜";
+        public override string Description => "如果道具已存在于幻化衣柜中，则禁止将其再次投入幻化衣柜。";
 
         public override FeatureType FeatureType => FeatureType.UI;
 

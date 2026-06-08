@@ -24,7 +24,7 @@ namespace PandorasBox.Features.UI
     {
         public override string Name => "套装幻影化收集助手";
 
-        public override string Description => "在物品提示框中显示你是否已拥有该物品所属的套装";
+        public override string Description => "在物品信息中显示该物品是否收录到所属的套装幻影化中。";
 
         public override FeatureType FeatureType => FeatureType.UI;
 

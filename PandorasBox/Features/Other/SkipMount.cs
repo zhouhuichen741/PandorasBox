@@ -10,7 +10,7 @@ namespace PandorasBox.Features.Other
     {
         public override string Name => "宏中已骑乘时跳过 '/mount'";
 
-        public override string Description => "在宏中使用 /mount 时，如果已骑乘坐骑则跳过该行";
+        public override string Description => "在宏中使用 /mount 时，如果已骑乘坐骑则跳过该行。";
 
         public override FeatureType FeatureType => FeatureType.Other;
 

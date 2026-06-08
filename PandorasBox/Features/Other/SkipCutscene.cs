@@ -8,7 +8,7 @@ namespace PandorasBox.Features.Other
     {
         public override string Name => "[国服限定] 辍学";
 
-        public override string Description => "主随辍学跳动画";
+        public override string Description => "主随辍学跳动画。";
 
         public override FeatureType FeatureType => FeatureType.Other;
 

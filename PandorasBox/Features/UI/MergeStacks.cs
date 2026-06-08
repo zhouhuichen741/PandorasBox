@@ -19,7 +19,7 @@ namespace PandorasBox.Features.UI
 
         public override bool FeatureDisabled => true;
 
-        public override string DisabledReason => "Moved to CBT";
+        public override string DisabledReason => "功能转移到封闭测试。";
 
         public List<InventorySlot> inventorySlots = new();
 

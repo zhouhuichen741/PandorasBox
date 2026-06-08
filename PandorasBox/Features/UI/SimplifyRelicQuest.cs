@@ -17,7 +17,7 @@ namespace PandorasBox.Features.UI
         public override string Description { get; } = "在与 NPC 对话时，添加任务所处阶段的说明。";
         public override bool FeatureDisabled => true;
 
-        public override string DisabledReason => "No longer being supported. Someone please PR further updates ty.";
+        public override string DisabledReason => "本功能已停止维护。欢迎有能力的开发者提交代码更新继续维护，谢谢。";
         public override FeatureType FeatureType => FeatureType.UI;
 
         public override void Enable()

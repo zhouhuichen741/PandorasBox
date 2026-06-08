@@ -10,7 +10,7 @@ namespace PandorasBox.Features.UI
     internal class RefreshPF : Feature
     {
         public override string Name { get; } = "自动招募板刷新";
-        public override string Description { get; } = "按设定的时间间隔刷新招募板";
+        public override string Description { get; } = "按设定的时间间隔刷新招募板。";
 
         public class Config : FeatureConfig
         {

@@ -12,13 +12,13 @@ namespace PandorasBox.Features.UI
     internal class DefaultVendorValue : Feature
     {
         public override string Name { get; } = "供应商默认购买数量";
-        public override string Description { get; } = "设置要从供应商处购买的商品的默认数量";
+        public override string Description { get; } = "设置要从供应商处购买的商品的默认数量。";
 
         public override FeatureType FeatureType => FeatureType.UI;
 
         public override bool FeatureDisabled => true;
 
-        public override string DisabledReason => "Crashing.";
+        public override string DisabledReason => "崩溃。";
         public class Config : FeatureConfig
         {
             [FeatureConfigOption("默认值", IntMin = 1, IntMax = 99, EditorSize = 300)]
