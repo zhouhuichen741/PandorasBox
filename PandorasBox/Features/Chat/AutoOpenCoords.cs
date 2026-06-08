@@ -47,7 +47,6 @@ internal class AutoOpenCoords : Feature
     public List<XivChatType> HiddenChatType = new()
     {
         XivChatType.None,
-        XivChatType.CustomEmote,
         XivChatType.StandardEmote,
         XivChatType.SystemMessage,
         XivChatType.SystemError,
