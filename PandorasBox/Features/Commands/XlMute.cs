@@ -75,7 +75,7 @@ namespace PandorasBox.Features.Commands
                 var saveMethod = configType.GetMethod("QueueSave");
                 saveMethod?.Invoke(configInstance, null);
 
-                Svc.Chat.Print($"已屏蔽 \"{arguments}\"。");
+                Svc.Chat.Print("已添加屏蔽词。");
             }
             catch (Exception ex)
             {
