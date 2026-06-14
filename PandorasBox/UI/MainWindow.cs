@@ -297,6 +297,17 @@ internal class MainWindow : Window
         }
     }
 
+	private static string GetFeatureTypeName(FeatureType type) => type switch
+        {
+            FeatureType.Actions => "技能",
+            FeatureType.UI => "UI",
+            FeatureType.Targeting => "目标",
+            FeatureType.Commands => "指令",
+            FeatureType.Other => "其他",
+            FeatureType.ChatFeature => "聊天",
+            _ => type.ToString(),
+        };
+
     private void DrawFeatures(IEnumerable<BaseFeature> features)
     {
         if (features == null || !features.Any() || !features.Any())
@@ -309,7 +320,7 @@ internal class MainWindow : Window
                 ImGui.Text($"搜索结果");
             }
             else
-                ImGui.Text($"{features.First().FeatureType}");
+                ImGui.Text(GetFeatureTypeName(features.First().FeatureType));
         });
         ImGui.Separator();
 
