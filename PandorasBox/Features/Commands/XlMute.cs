@@ -26,6 +26,11 @@ namespace PandorasBox.Features.Commands
             base.Setup();
         }
 
+        protected override void OnCommandInternal(string _, string args)
+        {
+            OnCommand(args.Split(' ').ToList());
+        }
+
         public override void Enable()
         {
             base.Enable();
