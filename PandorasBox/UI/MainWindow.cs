@@ -262,7 +262,7 @@ internal class MainWindow : Window
     {
         if (features == null || !features.Any() || features.Length == 0)
             return;
-        ImGuiEx.LineCentered($"featureHeader{features.First().FeatureType}", () => ImGui.Text($"{features.First().FeatureType}"));
+        ImGuiEx.LineCentered($"featureHeader{features.First().FeatureType}", () => ImGui.Text(GetFeatureTypeName(features.First().FeatureType)));
         ImGui.Separator();
 
         if (ImGui.BeginTable("###CommandsTable", 5, ImGuiTableFlags.Borders))
