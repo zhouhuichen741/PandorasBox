@@ -75,6 +75,12 @@ namespace PandorasBox.Features.Commands
                     badWordsProp.SetValue(configInstance, badWords);
                 }
 
+                if (badWords.Contains(arguments))
+                {
+                    Svc.Chat.Print("该屏蔽词已存在于屏蔽词列表中。");
+                    return;
+                }
+
                 badWords.Add(arguments);
 
                 var saveMethod = configType.GetMethod("QueueSave");
@@ -135,18 +141,33 @@ namespace PandorasBox.Features.Commands
                 var badWordsProp = configType.GetProperty("BadWords");
                 var badWords = badWordsProp.GetValue(configInstance) as IList<string>;
 
-                if (badWords == null || !badWords.Contains(arguments))
+                if (badWords == null || badWords.Count == 0)
+                {
+                    Svc.Chat.Print("屏蔽词列表为空。");
+                    return;
+                }
+
+                var badWordsList = badWords as List<string>;
+                if (badWordsList == null)
+                {
+                    badWordsList = badWords.ToList();
+                    badWordsProp.SetValue(configInstance, badWordsList);
+                }
+
+                var removedCount = badWordsList.RemoveAll(x => x == arguments);
+
+                if (removedCount == 0)
                 {
                     Svc.Chat.Print($"\"{arguments}\" 不在屏蔽词列表中。");
                     return;
                 }
 
-                badWords.Remove(arguments);
-
                 var saveMethod = configType.GetMethod("QueueSave");
                 saveMethod?.Invoke(configInstance, null);
 
-                Svc.Chat.Print($"已取消屏蔽 \"{arguments}\"。");
+                Svc.Chat.Print(removedCount == 1 
+                    ? $"已取消屏蔽 \"{arguments}\"。" 
+                    : $"已取消屏蔽 \"{arguments}\"，共删除 {removedCount} 个重复项。");
             }
             catch (Exception ex)
             {
