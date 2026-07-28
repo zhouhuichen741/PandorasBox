@@ -162,7 +162,9 @@ namespace PandorasBox.Features.UI
             var agentItemDetail = AgentItemDetail.Instance();
             if (agentItemDetail != null && agentItemDetail->ItemId != 0)
             {
-                return NormalizeItemId(agentItemDetail->ItemId);
+                var rawId = agentItemDetail->ItemId;
+                if (rawId >= 2_000_000) return 0;
+                return NormalizeItemId(rawId);
             }
 
             var hoveredGameItem = Svc.GameGui.HoveredItem;
